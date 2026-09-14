@@ -39,9 +39,7 @@ code_rl/    code layer + T1 sandbox + HumanEval/MBPP pools
 memoryRL/   skill-selection layer (self-built skill library, BFCL eval, two-arm transfer study)
 configs/    hyperparameters: 12 GB / server / v2 (group size 8 + partial credit)
 figures/    method overview (regenerable: figures/method_overview.py → png + pdf)
-tables/     research-style tables (LaTeX booktabs + Markdown), generated from evidence
-evidence/   curated raw evidence: result JSONs, training logs, skill training curve
-docs/       internal working notes (not for external readers)
+evidence/   curated raw evidence: result JSONs (evidence/results/) and training logs (evidence/logs/)
 ```
 
 ## Quick start
@@ -72,13 +70,45 @@ All pipelines are **idempotent / resumable**: training resumes from the latest c
 
 Data pools → optional cold-start SFT → **GRPO** with `G = 8` on-policy samples per prompt → a **verifiable reward** (numeric match / sandboxed unit tests / skill-set match with refusal) → group-relative advantage (no critic) → LoRA-only policy update on a frozen vision tower. Everything runs on a single GPU; SFT and RL question pools are disjoint, and evaluation is always performed on held-out public benchmarks.
 
-## Documentation
+## Results
 
-| Document | What it is |
-|----------|------------|
-| [`FINAL_REPORT.md`](FINAL_REPORT.md) | Consolidated report: background, method, all results, conclusions, limitations, reproduction commands |
-| [`EXPERIMENT_REPORT.md`](EXPERIMENT_REPORT.md) | Detailed experiment log incl. the v1→v2 analysis and the skill-selection study |
-| [`tables/ALL_TABLES.md`](tables/ALL_TABLES.md) | All result tables (Markdown) |
+### Reasoning — GSM8K (50-item test subset)
+| Model | Accuracy |
+|---|---|
+| 4B-Base | 30.0% |
+| 4B-SFT (cold start) | 34.0% |
+| 4B-GRPO v1 (G=4, binary reward) | 34.0% |
+| **4B-GRPO v2 (G=8, partial credit)** | **50.0%** |
+| 9B-Base (reference) | 40.0% |
+
+### Execution — HumanEval (164 tasks, pass@1)
+| Model | pass@1 |
+|---|---|
+| 4B-Base | 14.6% |
+| 4B-SFT (math cold start) | 21.9% |
+| 4B-Code-GRPO v1 | 21.9% |
+| **4B-Code-GRPO v2** | **25.0%** |
+
+### Selection — BFCL v3 (stratified 400; 80 per category)
+| Strategy / model | Exact | False-load ↓ | Miss ↓ | Avg. loads |
+|---|---|---|---|---|
+| Load all candidates | 0.200 | 1.000 | 0.000 | 1.84 |
+| Random pick | 0.330 | 1.000 | 0.000 | 1.00 |
+| Similarity retrieval (common practice) | 0.485 | 1.000 | 0.000 | 1.00 |
+| Retrieval + threshold rule | 0.590 | 0.650 | 0.154 | 0.77 |
+| 4B-Base (no RL) | 0.207 | 0.894 | 0.100 | 2.17 |
+| Math-RL only (no skill RL) | 0.160 | 0.881 | 0.142 | 1.97 |
+| Skill-RL from Base | 0.360 | 0.656 | 0.121 | 1.76 |
+| **Skill-RL from math-RL checkpoint** | **0.795** | **0.225** | **0.067** | **1.00** |
+
+On the two refusal categories, similarity retrieval scores **0.000** (it never refuses), while our policy reaches **0.650** (irrelevance) and **0.900** (live_irrelevance, false-load only 10%).
+
+### Cross-layer transfer
+| Setting | Before skill RL | After skill RL | Gain |
+|---|---|---|---|
+| Start = Base | 0.207 | 0.360 | +0.152 |
+| **Start = math-RL checkpoint** | 0.160 | **0.795** | **+0.635** |
+| Transfer effect | — | — | **+0.483** |
 
 ## Honest limitations
 

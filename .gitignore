@@ -59,3 +59,13 @@ Thumbs.db
 /RESUME.md
 /PROJECT_LOG.md
 /docs/
+
+# ---- 8. 不对外展示（仅本地保留；代码本身仍公开）----
+# 各层目录内的 README（含面试话术/简历叙事等内测内容）
+/code_rl/README.md
+/memoryRL/README.md
+/evidence/README.md
+# 结果表格与两份详细报告
+/tables/
+/FINAL_REPORT.md
+/EXPERIMENT_REPORT.md
