@@ -1,0 +1,12 @@
+# 统一换行符：shell 脚本必须保持 LF，否则在 Linux 服务器上会报
+# "bad interpreter: /bin/bash^M" 之类错误
+*.sh   text eol=lf
+*.py   text eol=lf
+*.yaml text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.txt  text eol=lf
+Makefile text eol=lf
+# 二进制/大文件按原样处理
+*.png  binary
+*.safetensors binary
