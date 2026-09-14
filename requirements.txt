@@ -1,15 +1,9 @@
 # =====================================================================
-# requirements.txt —— 项目依赖清单（分块注释，方便理解每一行干嘛的）
+# requirements.txt —— 项目依赖清单
 #
-# 【快速安装命令】（国内网络，务必走清华镜像，实测 pypi.org 直连不稳定）
+# 【快速安装命令】
 #   pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 #
-# 【版本策略】
-#   - torch 不锁小版本：Windows 上 PyPI/镜像默认就是 CUDA 版 wheel，
-#     装完用下面命令验证是否真能用 GPU：
-#       python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
-#   - 若输出 cuda=False，说明装成了 CPU 版，改成从 PyTorch 官方源装：
-#       pip install torch --index-url https://download.pytorch.org/whl/cu128
 # =====================================================================
 
 
@@ -53,5 +47,5 @@ protobuf              # 同上，Qwen tokenizer 依赖
 # modelscope           # 国内下载模型首选（Qwen 官方在 modelscope 有镜像）
 # openai               # Phase 6 部署后测试 OpenAI 兼容 API 用
 # lm-eval              # Phase 5 benchmark 统一评估（安装较重，届时再装）
-# vllm                 # Phase 6 部署。⚠️ 注意：vLLM 官方【不支持 Windows 原生】，
+# vllm                 # Phase 6 部署。
 #                      # 需在 WSL2 / Docker 里跑；Windows 上可用 transformers 方案替代
