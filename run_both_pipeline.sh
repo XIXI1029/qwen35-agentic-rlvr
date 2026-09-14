@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # =====================================================================
-# run_both_pipeline.sh —— 【顺序】跑两个实验：先数学 RL，再代码 RL
+# run_both_pipeline.sh —— 顺序跑两个实验：先数学 RL，再代码 RL
 #
-# 为什么顺序跑：两个实验都要独占 GPU，串行执行不会互相 OOM/抢显存。
+# 顺序执行：两个实验都需要独占 GPU，串行运行可避免显存竞争与 OOM。
 #
 # 覆盖内容（都用 v2 配置：组大小 8 + 部分分奖励 + 更大步数）：
 #   [A] 数学：SFT(已有则跳过) -> GRPO v2 训练 -> GSM8K/AIME 评估 -> 汇总
@@ -52,6 +52,6 @@ CODE_MAX_STEPS="$CODE_MAX_STEPS" \
   bash code_rl/run_code_pipeline.sh
 
 echo
-echo "✅ 两个实验全部完成。汇总表：outputs/results/SUMMARY.md"
+echo "两个实验全部完成。汇总表：outputs/results/SUMMARY.md"
 echo "   数学 v2 产物: outputs/qwen3.5-4b-grpo-v2"
 echo "   代码 v2 产物: outputs/qwen3.5-4b-grpo-code-v2"

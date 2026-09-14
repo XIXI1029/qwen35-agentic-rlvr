@@ -2,11 +2,11 @@
 # =====================================================================
 # build_bfcl_pool.py —— 下载 BFCL v3 并转成"技能选择"评测池（held-out 基准）
 #
-# BFCL 数据格式（我们已实测）：
+# BFCL 数据格式（实测）：
 #   题目文件 BFCL_v3_<cat>.json  : JSONL，每行 {id, question(对话), function(候选函数列表)}
 #   答案文件 possible_answer/BFCL_v3_<cat>.json : JSONL，每行 {id, ground_truth}
 #     ground_truth 形如 [{"triangle_properties.get": {...}}, ...] → 抽函数名即可
-#   ⚠️ irrelevance 类没有答案文件：正确行为=不调用任何函数 → ground_truth = []
+#   irrelevance 类没有答案文件：正确行为=不调用任何函数 → ground_truth = []
 #
 # 产出：data/processed/skill_bfcl_eval.jsonl
 #   每行 {"prompt", "ground_truth"(JSON), "meta":{category, id, n_candidates}}
@@ -100,7 +100,7 @@ def main() -> None:
             funcs = q.get("function") or []
             if not funcs:
                 continue
-            # 候选函数 -> 我们的"技能"结构（name/desc/args）
+            # 候选函数 -> 本项目的"技能"结构（name/desc/args）
             cands = [{"name": f.get("name", ""),
                       "desc": (f.get("description") or "").strip()[:300],
                       "args": (f.get("parameters", {}) or {}).get("properties", {})}

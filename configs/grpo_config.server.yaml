@@ -1,7 +1,7 @@
 # =====================================================================
-# grpo_config.server.yaml —— GRPO 配置【服务器大显存版】
+# grpo_config.server.yaml —— GRPO 配置（服务器大显存版）
 #
-# 与 grpo_config.yaml(本机 12GB 版) 的区别：
+# 与 grpo_config.yaml(本地 12GB 版) 的区别：
 #   - 放大批量并发：per_device 1->4、累积 8->2（等效 batch 仍 8，但 4 条一批
 #     并发算，比 batch1 的单条流水线吞吐更高）
 #   - 梯度检查点保持开启：实测 32GB(V100) 上"batch4+关检查点"会 OOM
@@ -18,7 +18,7 @@
 training:
   output_dir: "./outputs/qwen3.5-4b-grpo"
   # ---- 批量（服务器版）----
-  # ⚠️ 实测：batch4 + 关梯度检查点在 32GB(V100) 上会 OOM（GRPO 要同时存
+  # 实测：batch4 + 关梯度检查点在 32GB(V100) 上会 OOM（GRPO 要同时存
   #    策略/参考前向 + 4 条轨迹激活，比 SFT 吃显存）。所以这里保留批量并发，
   #    但把 checkpointing 开回来，并缩短生成长度来省显存。
   per_device_train_batch_size: 4   # 批量并发（比 batch1 的单条流水线效率高）

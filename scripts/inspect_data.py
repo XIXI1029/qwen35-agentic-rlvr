@@ -2,12 +2,12 @@
 # =====================================================================
 # inspect_data.py —— 快速探查数据集结构（写 prepare_data.py 前必用）
 #
-# 我们不拍脑袋猜 Open-AgentRL 数据集有哪些列，先跑这个脚本看真实 schema：
+# 不依赖猜测 Open-AgentRL 数据集有哪些列，先跑这个脚本看真实 schema：
 #   - 字段名 / 类型
 #   - 前几行样本（截断展示）
 #   - 总行数（非 streaming 时）
 #
-# 【用法】
+# 用法
 #   python scripts/inspect_data.py --dataset Gen-Verse/Open-AgentRL-30K
 #   python scripts/inspect_data.py --dataset Gen-Verse/Open-AgentRL-SFT-3K --n 2
 # =====================================================================

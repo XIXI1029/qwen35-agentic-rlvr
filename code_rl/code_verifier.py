@@ -2,11 +2,11 @@
 # =====================================================================
 # code_verifier.py —— Code RLVR 的奖励函数（对应数学实验里的 verifier.py）
 #
-# 【奖励定义】模型输出代码 -> 抠出函数 -> 在受限沙箱里跑隐藏测试：
+# 奖励定义模型输出代码 -> 抠出函数 -> 在受限沙箱里跑隐藏测试：
 #     全部通过 => 奖励 1.0，否则 0.0
 #   并通过并行执行把"每步要跑 num_generations×batch 段代码"的开销压下去。
 #
-# 【与 TRL 的接口】GRPOTrainer 会调用 reward_funcs 里的可调用对象：
+# 与 TRL 的接口GRPOTrainer 会调用 reward_funcs 里的可调用对象：
 #     reward(prompts=..., completions=..., ground_truth=[...], **kwargs)
 #   其中 ground_truth 来自数据集列（每行一个 JSON 字符串：
 #     {"tests": "...", "entry_point": "..."}）

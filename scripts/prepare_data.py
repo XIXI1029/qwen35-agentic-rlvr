@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 # =====================================================================
-# prepare_data.py —— Phase 2 数据准备 + 质量过滤
+# prepare_data.py —— 数据准备 + 质量过滤
 #
-# 【数据到底是什么？】（见 PROJECT_LOG 探查结论）
+# 数据结构
 #   - Open-AgentRL-30K：纯题库。每行 = 一道可验证题
 #       prompt[0].content = 题目；reward_model.ground_truth = 标准答案；
 #       style = 判定规则(如 rule-lighteval/MATH_v2)；data_source = 来源；
 #       ability = 类别（MATH / code ...）
-#     注意：数据集里【没有】现成轨迹——RL 轨迹要靠 GRPO 训练时模型在线生成。
+#     注意：数据集里没有现成轨迹——RL 轨迹要靠 GRPO 训练时模型在线生成。
 #   - Open-AgentRL-SFT-3K：messages+tools 的多轮对话（含工具调用轨迹），
 #     用于 SFT 冷启动，教模型"规范调用工具、按格式给最终答案"。
 #
-# 【质量工程设计（简历要讲得清）】
+# 质量工程设计（要讲得清）
 #   因为轨迹是"在线"的，plan 里那种"离线轨迹效率过滤"在本数据上不成立，
-#   我们把数据质量做在三个真实的点上：
+#   数据质量集中在三个环节：
 #     ① 可验证性过滤：只留 ground_truth 清晰、判定规则可达的题
 #        （代码题需沙箱执行，先单独归档，不混进纯数学 RLVR 池）
 #     ② 去重：同一道题在不同来源重复出现时只留一条（hash 判重）
 #     ③ 规范化：统一 prompt/答案文本格式；答案按 style 预解析成可比较对象
-#   而"轨迹是否绕路/低效"改为在奖励函数里做（长度/步数惩罚）——这才符合 RLVR 逻辑。
+#   而"轨迹是否低效"改为在奖励函数里做（长度/步数惩罚）——这才符合 RLVR 逻辑。
 #
-# 【用法】
+# 用法
 #   python scripts/prepare_data.py                        # 按 data_config.yaml 全量
 #   python scripts/prepare_data.py --subset math          # 只留数学(默认)
 #   python scripts/prepare_data.py --subset all           # 连代码题一起(仅归档)
@@ -117,7 +117,7 @@ def process_rl(max_samples, subset) -> list:
         }
 
         if code_like:
-            n_code_archived += 1       # 代码题不进当前池（Phase4 只训数学 RLVR）
+            n_code_archived += 1       # 代码题不进当前池（当前只训练数学 RLVR）
         if subset == "math" and code_like:
             continue
         rows.append(row)
@@ -194,7 +194,7 @@ def main() -> None:
     stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2),
                           encoding="utf-8")
     logger.info(f"统计: {json.dumps(stats, ensure_ascii=False, indent=2)}")
-    logger.info("Phase 2 数据准备完成 ✅")
+    logger.info("数据准备完成")
 
 
 if __name__ == "__main__":

@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 # =====================================================================
-# smoke_test.py —— Phase 1「技术选型冒烟测试」（关键闸口）
+# smoke_test.py —— 技术选型冒烟测试（关键闸口）
 #
-# 【为什么必须有这一步】
+# 为什么必须有这一步
 #   Qwen3.5-4B-Base 是多模态模型 Qwen3_5ForConditionalGeneration，
 #   TRL 的 GRPOTrainer 官方文档说"主要支持纯文本 CausalLM"，VLM 支持仍有
-#   bug。所以我们先用【极小配置】验证三件事，再决定要不要真花几天跑训练：
+#   bug。因此先用极小配置验证三件事，再决定要不要真花几天跑训练：
 #
 #   ① 能否加载该模型（bf16，不含视觉解码器梯度）
 #   ② 冻结视觉塔 + 只训文本 LoRA 后，能否在 12GB 上完成一次前向+反向
 #   ③ TRL 1.12 的 GRPOTrainer 能否在这个模型上做 1 步更新
 #
-# 【判定】
+# 判定
 #   - SFT 步通过 + GRPO 步通过  -> 走 Qwen3.5-4B-Base 全流程
 #   - SFT 过、GRPO 不过          -> 训练核心仍可 SFT，再针对 GRPO 适配
 #   - 两者都因架构不兼容失败     -> 自动切换 Qwen3-4B-Base（configs 已留切换口）
 #
-# 【用法】
+# 用法
 #   python scripts/smoke_test.py                  # sft + grpo 都跑
 #   python scripts/smoke_test.py --stage sft      # 只跑 SFT 步
 #   python scripts/smoke_test.py --stage grpo     # 只跑 GRPO 步
@@ -58,7 +58,7 @@ def load_model_and_tokenizer(model_path: str):
       - 用 AutoModelForImageTextToText 而不是 AutoModelForCausalLM
         （后者会因参数命名空间不匹配而报错，见 TRL issue #6028）
       - torch_dtype=bf16：社区反馈 Qwen3.5 用 4bit QLoRA 量化方差大，
-        这里冒烟先试 bf16 + LoRA；若显存不够，smoke 会告诉我们
+        这里冒烟先试 bf16 + LoRA；若显存不足，冒烟测试即可暴露
       - 之后冻结 vision/visual 参数（纯文本任务不需要视觉分支）
     """
     logger.info(f"加载模型: {model_path}  (dtype=bf16)")
@@ -145,10 +145,10 @@ def smoke_sft(model, tokenizer) -> bool:
         opt.step()
         opt.zero_grad()
         mem = torch.cuda.max_memory_allocated() / 1024**3
-        logger.info(f"[SFT 冒烟] ✅ 成功。loss={loss.item():.4f}, 峰值显存={mem:.2f}GB")
+        logger.info(f"[SFT 冒烟] 成功。loss={loss.item():.4f}, 峰值显存={mem:.2f}GB")
         return True
     except Exception as e:
-        logger.error(f"[SFT 冒烟] ❌ 失败: {type(e).__name__}: {e}")
+        logger.error(f"[SFT 冒烟] 失败: {type(e).__name__}: {e}")
         return False
 
 
@@ -175,7 +175,7 @@ def smoke_grpo(model, tokenizer) -> bool:
     ds = Dataset.from_list([{"prompt": p} for p in SMOKE_PROMPTS])
 
     # GRPOConfig 冒烟最小化：只看更新回路，2 组 * 2 生成
-    # ⚠️ 参数名以内省到的 trl 1.12 签名为准（旧版 max_prompt_length /
+    # 参数名以内省到的 trl 1.12 签名为准（旧版 max_prompt_length /
     #    disable_dropout_in_model 等已不存在，别照抄旧教程）
     cfg = GRPOConfig(
         output_dir=".smoke_grpo_out",
@@ -200,7 +200,7 @@ def smoke_grpo(model, tokenizer) -> bool:
     t0 = time.time()
     trainer.train()                   # 由 max_steps=1 控制只跑一步
     mem = torch.cuda.max_memory_allocated() / 1024**3
-    logger.info(f"[GRPO 冒烟] ✅ 成功。用时 {time.time()-t0:.1f}s, 峰值显存={mem:.2f}GB")
+    logger.info(f"[GRPO 冒烟] 成功。用时 {time.time()-t0:.1f}s, 峰值显存={mem:.2f}GB")
     return True
 
 
@@ -239,7 +239,7 @@ def main() -> None:
     # 输出冒烟结论（按"实际跑了哪些 stage"判定，别漏判）
     logger.info("=" * 60)
     for k, v in results.items():
-        logger.info(f"冒烟 [{k}] : {'通过 ✅' if v else '失败 ❌'}")
+        logger.info(f"冒烟 [{k}] : {'通过' if v else '失败'}")
 
     all_pass = all(results.values()) if results else False
     sft_pass = results.get("sft", False)

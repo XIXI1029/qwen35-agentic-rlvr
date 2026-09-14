@@ -2,19 +2,19 @@
 # =====================================================================
 # build_sft_coldstart.py —— 生成冷启动 SFT 数据（Rejection-Sampling SFT）
 #
-# 【背景/为什么】
-#   Open-AgentRL-SFT-3K 的 91% 带"代码工具调用"，和我们的纯数学 RLVR
+# 背景/为什么
+#   Open-AgentRL-SFT-3K 的 91% 带"代码工具调用"，和本项目的纯数学 RLVR
 #   （无工具沙箱）格式不符。因此冷启动改用**自蒸馏**：
 #   - 从 RL 数学池抽 N 道题
 #   - 用 4B-Base 自己采样若干次解题轨迹（Chain-of-Thought）
-#   - 用可验证奖励（verifier.verify）筛出【答对】的轨迹作为 SFT 正样本
+#   - 用可验证奖励（verifier.verify）筛出答对的轨迹作为 SFT 正样本
 #
-# 【为什么这在方法上站得住（写简历/面试讲）】
+# 为什么这在方法上站得住（写/讲）
 #   "Rejection-Sampling SFT 冷启动"是 RL 训练的标准前置：
 #   让策略先把自己的"正确且格式受控"的行为看几遍，再进 GRPO 在线探索，
 #   能显著提升 RL 稳定性、缩短收敛（和 9B 这类对齐模型无关，纯自举）。
 #
-# 【用法】
+# 用法
 #   python scripts/build_sft_coldstart.py --questions 600 --attempts 3
 # =====================================================================
 
@@ -126,7 +126,7 @@ def main() -> None:
         for rec in kept:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
     succ = len(kept) / max(1, attempted_q)
-    logger.info(f"✅ 冷启动 SFT 数据已生成: {out_path}")
+    logger.info(f"冷启动 SFT 数据已生成: {out_path}")
     logger.info(f"保留 {len(kept)}/{attempted_q} 条正确轨迹"
                 f" (成功率 {succ*100:.1f}%)，用时 {time.time()-t0:.0f}s")
 

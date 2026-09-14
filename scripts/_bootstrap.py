@@ -2,16 +2,16 @@
 # =====================================================================
 # _bootstrap.py —— 所有脚本共用的「引导模块」
 #
-# 【为什么需要它】
+# 为什么需要它
 #   每个脚本开头都要做同样几件事，抽到这里避免重复、也避免漏配：
 #     1) 设好国内镜像环境变量（huggingface.co 被墙，统一走 hf-mirror）
 #     2) 提供"项目根目录 / 常用路径"（所有缓存/产物都在项目里，不落 C 盘）
 #     3) 一个加载 configs/*.yaml 的小工具
 #     4) 统一的日志配置
 #
-# 【用法】任何脚本第一行都写：
+# 用法：任何脚本第一行都写：
 #   from _bootstrap import ROOT, load_yaml, logger  # 或 sys.path 导入
-#  ⚠️ 注意：必须在 import transformers / datasets 之前先调用 setup_hf_env()，
+#  注意：必须在 import transformers / datasets 之前先调用 setup_hf_env()，
 #     因为镜像地址是通过环境变量读取的，装完才 import 才有效。
 # =====================================================================
 
@@ -50,7 +50,7 @@ def setup_hf_env() -> None:
     """
     # 国内镜像兜底：没设就默认 hf-mirror
     os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
-    # ⚠️ 关键：huggingface_hub 新版大文件默认走 Xet 专用通道
+    # 关键：huggingface_hub 新版大文件默认走 Xet 专用通道
     # (cas-server.xethub.hf.co)。hf-mirror 无法代理它、也无授权 -> 报 401。
     # 这里全局禁用 Xet，改走普通 HTTP 下载（镜像可正常转发，更稳）。
     os.environ.setdefault("HF_HUB_DISABLE_XET", "1")

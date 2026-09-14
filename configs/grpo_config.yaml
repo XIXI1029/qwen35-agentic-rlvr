@@ -1,7 +1,7 @@
 # =====================================================================
-# grpo_config.yaml —— Phase 4「GRPO 强化学习」全部配置（本项目核心）
+# grpo_config.yaml —— GRPO 强化学习全部配置（本项目核心）
 #
-# 【run_grpo.py 的读取约定】
+# run_grpo.py 的读取约定
 #   - training 段   -> 传给 trl.GRPOConfig（字段名与其同名参数一致）
 #   - generation 段 -> 采样用超参，脚本会写入 model.generation_config
 #                      或作为采样 kwargs（GRPO 是"模型自己采样轨迹"，
@@ -9,7 +9,7 @@
 #   - reward 段     -> 奖励函数配置（reward_fn 读它决定怎么打分）
 #   - data / model / qlora 段与 sft_config 含义一致（这里加载 SFT 后的模型继续训）
 #
-# 【GRPO 直觉（写简历/面试必答）】
+# GRPO 直觉
 #   对同一个问题(prompt)采样 N 条不同答案(completions) 组成一组(group)，
 #   每条奖励先减去组均值再除以组标准差 -> 组内相对优势 A。
 #   优势>0 的轨迹（比同组其他答案更好）概率上调，优势<0 的调低。
@@ -23,13 +23,13 @@ training:
   output_dir: "./outputs/qwen3.5-4b-grpo"   # 训练产物目录
   # ---- 采样规模：GRPO 的显存大头是"每 prompt 展开 N 条轨迹"----
   num_generations: 4        # 每组采样 4 条轨迹（GRPO 的 group size）
-                            # ⚠️ 12GB 卡上若 OOM，先降到 2
+                            # 12GB 卡上若 OOM，先降到 2
   max_completion_length: 256   # 每条生成轨迹的最长 token（GSM8K CoT 不长，给 256 够）
   per_device_train_batch_size: 1  # 每卡每步的 prompt 数（1×4 条轨迹 已是 12GB 预算内）
   gradient_accumulation_steps: 8   # 累积 8 次再更新（等效放大 batch，RL 稳定性）
   gradient_checkpointing: true     # 用算力换显存：反传重算中间激活
   num_train_epochs: 10             # 保险给大，实际由 max_steps 封顶
-  max_steps: 80                    # ⚠️ 默认封顶 80 步（控制预算；脚本可用 --max-steps 覆盖）
+  max_steps: 80                    # 默认封顶 80 步（控制预算；脚本可用 --max-steps 覆盖）
   # ---- 学习率：RL 比 SFT 更敏感，必须更小 ----
   learning_rate: 1.0e-6            # GRPO 常用 1e-6~3e-6；崩了就降到 5e-7
   lr_scheduler_type: "constant"    # RL 常用恒定 lr

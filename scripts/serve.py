@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # =====================================================================
-# serve.py —— Phase 6 部署：OpenAI 兼容的本地 API
+# serve.py —— 部署：OpenAI 兼容的本地 API
 #
-# 【背景】vLLM 官方不支持 Windows，所以这里用纯 transformers 起一个
+# 背景vLLM 官方不支持 Windows，所以这里用纯 transformers 起一个
 #   /v1/chat/completions 端点，协议与 OpenAI 一致：
 #     curl http://localhost:8000/v1/chat/completions \
 #          -H "Content-Type: application/json" \
 #          -d '{"model":"local","messages":[{"role":"user","content":"15*17+3=?"}]}'
 #   客户端 openai.OpenAI(base_url="http://localhost:8000/v1", api_key="x") 即可调用。
 #
-# 【用法】 python scripts/serve.py --model outputs/qwen3.5-4b-grpo --port 8000
+# 用法 python scripts/serve.py --model outputs/qwen3.5-4b-grpo --port 8000
 # =====================================================================
 
 from __future__ import annotations

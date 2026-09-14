@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =====================================================================
-# run_9b_server.sh —— 在【服务器】上跑 9B 基准（本机 12GB 跑不动的场景）
+# run_9b_server.sh —— 9B 基准运行脚本（单卡显存不足时的替代方案）
 #
 # 用法（在项目根目录）：
 #   bash run_9b_server.sh                  # 全流程
@@ -53,4 +53,4 @@ fi
 echo "==> 汇总对比表 → outputs/results/SUMMARY.md"
 $PY scripts/compare_models.py
 
-echo "✅ 完成。结果看 outputs/results/SUMMARY.md"
+echo "完成。结果看 outputs/results/SUMMARY.md"

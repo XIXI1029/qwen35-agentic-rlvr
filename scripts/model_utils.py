@@ -36,7 +36,7 @@ def require_gpu() -> None:
             "  2) echo $CUDA_VISIBLE_DEVICES\n"
             "  3) python -c \"import torch;print(torch.__version__, torch.version.cuda)\"\n"
             "  最可能原因：torch 的 CUDA 版本高于驱动支持版本 -> 用与驱动匹配的"
-            " torch 重装（见 README §6.7 / PROJECT_LOG）"
+            " torch 重装（见 README 的环境说明）"
         )
         raise RuntimeError(msg)
     logger.info(f"GPU 自检通过: {torch.cuda.get_device_name(0)}")
@@ -108,7 +108,7 @@ def load_qwen35_model(
     Args:
         model_id_or_path: 模型 id（自动查 registry）或本地路径
         load_in_4bit:  True 时用 bitsandbytes 4-bit 量化加载
-        cpu:           True 时强制纯 CPU（device_map=None）。⚠️ 用于 9B 这类
+        cpu:           True 时强制纯 CPU（device_map=None）。用于 9B 这类
                        GPU 加载会 segfault 的模型；bf16 下 9B≈18GB 内存风险高，
                        用 float16≈9GB 更稳（CPU 推理慢但能出数）
     Returns:

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # =====================================================================
-# evaluate.py —— 单模型评测（Phase 1 基线 & Phase 5 正式对比 & 服务器跑 9B 共用）
+# evaluate.py —— 单模型评测（基线与正式对比，以及 9B 评估共用）
 #
-# 【服务器场景说明】
-#   本机 12GB 卡跑不动 9B（加载即 segfault）。把项目复制到大显存 Linux 服务器后：
+# 服务器场景说明
+#   本地 12GB 卡无法运行 9B（加载即 segfault）。把项目复制到大显存 Linux 服务器后：
 #     python scripts/evaluate.py --model Qwen/Qwen3.5-9B-Base --task gsm8k --max-samples 50 --strategy auto
 #   --strategy auto 会依次尝试：
 #     ① bf16 全上 GPU（大显存卡，如 24GB A100/4090）  -> 最快最准
@@ -11,7 +11,7 @@
 #     ③ 纯 CPU float16（都没有 GPU 时的兜底，很慢）
 #   模型不存在时会自动下载（见 model_utils.ensure_model）。
 #
-# 【用法】
+# 用法
 #   python scripts/evaluate.py --model Qwen/Qwen3.5-4B-Base --task gsm8k --max-samples 50
 #   python scripts/evaluate.py --model Qwen/Qwen3.5-9B-Base --task aime2024 --strategy auto
 #   python scripts/evaluate.py --model outputs/qwen3.5-4b-grpo --task gsm8k --max-samples 50 --tag grpo

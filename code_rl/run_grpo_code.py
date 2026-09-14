@@ -7,7 +7,7 @@
 #   其余（模型加载/LoRA/冻结视觉/GRPOConfig/断点续训/保存）完全一致
 #   => 这就是"同一套 RLVR 流水线，换可验证任务即可复用"的证明
 #
-# 【用法】
+# 用法
 #   python code_rl/run_grpo_code.py --config code_rl/code_config.yaml --max-steps 300
 # =====================================================================
 

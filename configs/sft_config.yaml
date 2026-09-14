@@ -1,7 +1,7 @@
 # =====================================================================
-# sft_config.yaml —— Phase 3「冷启动 SFT」的全部配置
+# sft_config.yaml —— 冷启动 SFT的全部配置
 #
-# 【设计说明】
+# 设计说明
 #   run_sft.py 会把这个 YAML 原样加载成 dict：
 #     - training 段  -> 传给 transformers.TrainingArguments（注意 TRL 新版本
 #       用 SFTConfig，它继承自 TrainingArguments 并加了 max_seq_length 等）
@@ -9,7 +9,7 @@
 #     - qlora 段     -> 传给 peft.LoraConfig（只在 4bit 基座上挂低秩适配器）
 #     - data 段      -> 训练数据位置
 #
-# 【为什么 SFT 是必需的冷启动】
+# 为什么 SFT 是必需的冷启动
 #   GRPO 是"在线"RL：模型自己采样轨迹再学。如果一开始模型连"正确的解题+工具
 #   调用格式"都不会，采样出来全是垃圾，奖励恒为 0，RL 学不动。
 #   所以先用 3K 条专家轨迹做 SFT，让模型学会"行为格式"，RL 才有正反馈可学。
@@ -27,7 +27,7 @@ training:
   num_train_epochs: 1                     # 300 条小数据 1 epoch（38 步），冷启动只需"教格式"
   learning_rate: 2.0e-5                   # SFT 学习率比预训练高（LoRA 常用 1e-5~2e-5）
   lr_scheduler_type: "cosine"             # 余弦退火，收尾更稳（可选 constant）
-  warmup_steps: 20                        # 前 20 步线性热身（⚠️ trl 1.12 用 warmup_steps 不是 ratio）
+  warmup_steps: 20                        # 前 20 步线性热身（trl 1.12 用 warmup_steps 而非 ratio）
   weight_decay: 0.01                      # 权重衰减，轻微正则
   # ---- 保存 / 日志节奏 ----
   save_strategy: "no"                     # SFT 短训，不存中间 checkpoint，只存最终
@@ -35,12 +35,12 @@ training:
   report_to: "none"                       # 不接 wandb/tensorboard（想监控可改 "wandb"）
   # ---- 精度：4070 是 Ada 架构支持 bf16，显存减半且训练更稳 ----
   bf16: true
-  # ---- SFTConfig 特有（⚠️ trl 1.12 的参数名，旧教程 max_seq_length 已改名）----
+  # ---- SFTConfig 特有（trl 1.12 的参数名，旧教程 max_seq_length 已改名）----
   max_length: 320                         # 截断长度（太长样本是 SFT 耗时长尾；lm_head 词表大，
                                           # 序列越长越贵，尽量截断控预算）
   packing: false                          # 不做样本打包（保留独立样本，loss 更清晰）
 
-# ---------- 基座模型（Phase 1 决策后按需改 model_id）----------
+# ---------- 基座模型（按需修改 model_id）----------
 model:
   # 注意：Qwen3.5 是多模态 ForConditionalGeneration，若 GRPOTrainer 不适配，
   # 训练主力可换标准 CausalLM（见 README §6），届时改这里即可
@@ -61,8 +61,8 @@ qlora:
   lora_dropout: 0.05 # 适配器上的 dropout，防过拟合
   bias: "none"       # 不训练 bias 项
   # 目标模块：Qwen 系的 q/k/v/o 投影矩阵。挂注意力上的 Wq 通常效果最好。
-  # ⚠️ 若训练主力换成 Qwen3（标准 CausalLM），这组名字同样适用。
-  # ⚠️ 若用 Qwen3.5（混合注意力），可能还需加线性注意力模块的投影名，Phase1 冒烟时确认
+  # 若训练主力换成 Qwen3（标准 CausalLM），这组名字同样适用。
+  # 若用 Qwen3.5（混合注意力），可能还需加线性注意力模块的投影名，冒烟测试时确认
   target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
   task_type: "CAUSAL_LM"                  # 因果语言模型任务
 

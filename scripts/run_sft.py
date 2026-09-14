@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 # =====================================================================
-# run_sft.py —— Phase 3 冷启动 SFT
+# run_sft.py —— 冷启动 SFT
 #
-# 【输入】 data/processed/sft_coldstart.jsonl（build_sft_coldstart.py 产物）
+# 输入 data/processed/sft_coldstart.jsonl（build_sft_coldstart.py 产物）
 #    每行 = {"messages": [user题, assistant解题轨迹]} + question/ground_truth
-# 【输出】 outputs/qwen3.5-4b-sft/  （merge 后的完整模型，可直接评估/做 GRPO 起点）
+# 输出 outputs/qwen3.5-4b-sft/  （merge 后的完整模型，可直接评估/做 GRPO 起点）
 #
-# 【要点】
+# 要点
 #   - 用 bf16 + LoRA（Qwen3.5 社区反馈不推荐 4bit QLoRA）
 #   - 冻结多模态视觉塔，只训文本注意力的低秩适配器（显存主力 ~8.4GB）
 #   - 12GB 卡用 batch=1 + 梯度累积 + gradient_checkpointing 压住激活
 #   - 训练文本 = chat_template(user题 + assistant轨迹)，与 RL/评估格式一致
 #
-# 【用法】 python scripts/run_sft.py --config configs/sft_config.yaml
+# 用法 python scripts/run_sft.py --config configs/sft_config.yaml
 # =====================================================================
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ from transformers import AutoModelForImageTextToText, AutoTokenizer
 # 1. 加载 + 冻结视觉 + 挂 LoRA（和 smoke_test 同一套路）
 # ---------------------------------------------------------------
 def load_trainable_model(model_id: str):
-    # ⚠️ 必须加载【本地路径】：若直接传模型 id 字符串，transformers 会去 HF hub
+    # 必须加载本地路径：若直接传模型 id 字符串，transformers 会去 HF hub
     # 下载（国内 xet 通道 401/被墙）。ensure_model 会先找本地/registry，
     # 都没有则自动下载（服务器从零跑用得上）。
     local_path = ensure_model(model_id) if not os.path.isdir(model_id) else model_id
@@ -131,7 +131,7 @@ def main() -> None:
 
     trainer = SFTTrainer(
         model=model,
-        processing_class=tokenizer,   # ⚠️ trl 1.12 参数名，旧版叫 tokenizer
+        processing_class=tokenizer,   # trl 1.12 参数名（旧版为 tokenizer）
         args=sft_cfg,
         train_dataset=train_ds,
     )
@@ -146,7 +146,7 @@ def main() -> None:
     save_dir = OUTPUTS_DIR / "qwen3.5-4b-sft"
     save_dir.mkdir(parents=True, exist_ok=True)
     merged = model.merge_and_unload()      # 把 LoRA 适配器并回主权重
-    # ⚠️ merge_and_unload 会把权重上转到 fp32，必须显式转回 bf16 再存，
+    # merge_and_unload 会把权重上转到 fp32，必须显式转回 bf16 再存，
     # 否则 4.5B 参数会写出 ~17GB（fp32）占满磁盘且后续加载慢。
     merged = merged.to(torch.bfloat16)
     merged.save_pretrained(save_dir)

@@ -2,12 +2,12 @@
 # =====================================================================
 # check_env.py —— 环境自检脚本
 #
-# 【作用】安装完依赖后跑一次，确认：
+# 作用安装完依赖后跑一次，确认：
 #   - Python / torch / CUDA 是否就绪（GPU 能不能用）
 #   - 关键库版本（transformers/trl/peft/bitsandbytes/datasets）
 #   - 模型缓存目录是否在项目内（而不是 C 盘）
 #
-# 【运行】
+# 运行
 #   python scripts/check_env.py
 #
 # 预期看到：torch.cuda.is_available() = True；缓存路径含 E:/qwen/...
@@ -65,7 +65,7 @@ def main() -> None:
 
     logger.info("=" * 60)
     ok = torch.cuda.is_available()
-    logger.info(f"结论：{'环境就绪 ✅ 可进入 Phase 1' if ok else 'GPU 不可用，按上面提示修复后再继续 ❌'}")
+    logger.info(f"结论：{'环境就绪，可进入下一步' if ok else 'GPU 不可用，按上面提示修复后再继续'}")
 
 
 if __name__ == "__main__":

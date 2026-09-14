@@ -5,16 +5,16 @@
 # 覆盖：
 #   [1] GSM8K 全量 test（1319 题）× {Base, SFT, GRPO-v2, 9B}
 #   [2] BFCL v3 全量（2771 题）× {Base, start-grpo-v2, skillrl-from-base, skillrl-from-mathrl}
-#   [3] BFCL 离线基线（similarity/rule/load_all/random，秒级）
+#   [3] BFCL 离线基线（similarity/rule/load_all/random，开销极小）
 #   [4] 汇总打印（GSM8K 与 BFCL 两张表）
 #
-# 【耗时预估】（V100，按实测单题速度）
+# 耗时预估（V100，按实测单题速度）
 #   GSM8K：约 15-20s/题 → 1319 题 ≈ 5.5-7h/模型 × 4 ≈ 22-28h
 #   BFCL ：约 100-150s/80题 → 2771 题 ≈ 6-8h/模型 × 4 ≈ 24-32h
 #   → 合计约 2-2.5 天；建议 nohup 挂后台，跑完一段看一段
 #   （想省时间：先只跑 GSM8K 那 4 个，或把 9B 换成抽样）
 #
-# 【断点续跑】每个模型的每个任务独立判断：结果文件存在且比权重新 → 跳过
+# 断点续跑每个模型的每个任务独立判断：结果文件存在且比权重新 → 跳过
 #
 # 用法：
 #   nohup bash run_full_eval.sh > logs/full_eval.log 2>&1 &
@@ -82,7 +82,7 @@ if [[ "$ONLY" == "all" || "$ONLY" == "bfcl" ]]; then
     fi
   done
 
-  # ---------------- [3] BFCL 离线基线（秒级）----------------
+  # ---------------- [3] BFCL 离线基线（开销极小）----------------
   for b in similarity rule load_all random; do
     if [[ -z "$(ls -t outputs/results/bfcl_skill_full-$b'_'*.json 2>/dev/null | head -1 || true)" ]]; then
       echo "==> [3] BFCL 基线(全量): $b"
@@ -141,4 +141,4 @@ for t in border:
         print(f"{t:26s} {o['n']:6d} {o['exact_acc']:7.3f} {o['micro_f1']:6.3f} "
               f"{o['false_load_rate']:7.3f} {o['miss_rate']:7.3f}")
 PYSUM
-echo "✅ 全量评测流程结束（可重复运行续跑）"
+echo "全量评测流程结束（可重复运行续跑）"

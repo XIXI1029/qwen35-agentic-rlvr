@@ -13,7 +13,7 @@
 #   bash code_rl/run_code_pipeline.sh
 #   CODE_MAX_STEPS=600 nohup bash code_rl/run_code_pipeline.sh > code_rl/logs/code.log 2>&1 &
 #
-# ⚠️ 安全：沙箱会执行模型生成的代码。请不要用 root 跑长任务；
+# 安全：沙箱会执行模型生成的代码。请不要用 root 跑长任务；
 #    理想情况放进容器/低权限用户。详见 code_rl/README.md
 # =====================================================================
 set -Eeuo pipefail
@@ -79,4 +79,4 @@ run_eval "$CODE_OUT"              "$CODE_TAG"
 echo "==> [5/5] 汇总 -> outputs/results/SUMMARY.md"
 $PY scripts/compare_models.py
 
-echo "✅ Code RL 实验完成（可反复运行续跑）。"
+echo "Code RL 实验完成（可反复运行续跑）。"

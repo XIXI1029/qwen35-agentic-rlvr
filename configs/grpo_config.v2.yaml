@@ -1,7 +1,7 @@
 # =====================================================================
 # grpo_config.v2.yaml —— 数学 GRPO 配置 v2（针对"GRPO 净收益≈0"的改进版）
 #
-# 【相对 v1(server) 的改动及理由】（详见 EXPERIMENT_REPORT.md §5）
+# 相对 v1(server) 的改动及理由（详见 EXPERIMENT_REPORT.md §5）
 #   num_generations  4 -> 8    : v1 组内零方差比例高(实测 0.5)，一半步没梯度；
 #                                组变大 -> 同组更容易出现"有对有错"，优势非零
 #   max_steps        600 -> 2000: v1 明显欠训练

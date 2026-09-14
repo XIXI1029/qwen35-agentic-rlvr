@@ -5,7 +5,7 @@
 # 与 scripts/run_grpo.py 的唯一区别：
 #   数据 = 自建技能选择题库；奖励 = 技能集合匹配（skill_verifier）
 #   其余（模型加载/LoRA/冻结视觉/GRPOConfig/断点续训/merge 保存）完全复用
-#   => 这是"同一套 RLVR 流水线，换可验证任务即可复用"的第三次证明
+#   => 这是"同一套 RLVR 流水线，换可验证任务即可复用"的一次验证
 #
 # 用法：
 #   python memoryRL/run_grpo_skill.py --config memoryRL/skill_config.yaml --max-steps 800

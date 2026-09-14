@@ -2,15 +2,15 @@
 # =====================================================================
 # evaluate_skill.py —— Skill 选择评测（BFCL held-out）+ 基线对比
 #
-# 【指标】（对应 plan1.md §3.1/§4）
+# 指标
 #   exact_acc       技能集合完全匹配率（主指标）
 #   micro P/R/F1    技能级微观精确率/召回率/F1（对应 BFCL 的选取口径）
 #   false_load_rate "该拒绝却加载"率（BFCL irrelevance 类，正是"加载不准"）
 #   miss_rate       "该加载却拒绝"率
 #   avg_pred_size   平均加载技能数（越少越省上下文）
 #
-# 【策略】
-#   --model <path|hf>  用模型生成（我们的 RL 策略 / Base / SFT 对比）
+# 策略
+#   --model <path|hf>  用模型生成（本项目的 RL 策略 / Base / SFT 对比）
 #   --model load_all   基线 B2：把所有候选都加载
 #   --model similarity 基线 B3：按 请求↔技能描述 的词重叠选 top-1（业界现状做法）
 #   --model rule       基线 B4：B3 + 阈值，低于阈值则拒绝

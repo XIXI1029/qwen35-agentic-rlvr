@@ -2,12 +2,12 @@
 # =====================================================================
 # download_models.py —— 下载模型到项目 models/ 目录（不落 C 盘）
 #
-# 【用法】
+# 用法
 #   python scripts/download_models.py                       # 下载默认 4B-Base
 #   python scripts/download_models.py --model Qwen/Qwen3.5-9B-Base
 #   python scripts/download_models.py --source hf           # 走 hf-mirror（需先设 HF_ENDPOINT）
 #
-# 【说明】
+# 说明
 #   huggingface.co 在国内被墙，这里默认走 ModelScope（国内最稳）。
 #   下载完成后会把 {模型id: 本地目录} 写进 models/registry.json，
 #   之后 load 模型统一查这个注册表，避免到处硬编码路径。

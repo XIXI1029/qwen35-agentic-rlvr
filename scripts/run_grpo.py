@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 # =====================================================================
-# run_grpo.py —— Phase 4 GRPO 强化学习（本项目核心）
+# run_grpo.py —— GRPO 强化学习（本项目核心）
 #
-# 【输入】 data/processed/grpo_train.jsonl（build_grpo_pool.py 产物）
+# 输入 data/processed/grpo_train.jsonl（build_grpo_pool.py 产物）
 #         outputs/qwen3.5-4b-sft/（SFT 起点，也可回退到 Base）
-# 【输出】 outputs/qwen3.5-4b-grpo/（merge 后完整权重）+ 训练日志曲线
+# 输出 outputs/qwen3.5-4b-grpo/（merge 后完整权重）+ 训练日志曲线
 #
-# 【原理一句话】每个问题采样 N 条轨迹组成一组，先各自算"可验证奖励"，
+# 原理一句话每个问题采样 N 条轨迹组成一组，先各自算"可验证奖励"，
 # 再组内归一化得到相对优势：答对的轨迹概率被推高、答错的被压低；
 # 用 KL 惩罚拉住策略别跑飞（由 SFT/Base 当 ref 锚点）。
-# 【RLVR 奖励】verifier.verify(completion, ground_truth) —— 数字答案比对。
+# RLVR 奖励verifier.verify(completion, ground_truth) —— 数字答案比对。
 #   数据集里的 ground_truth 列由 TRL 1.12 自动作为 kwargs 传进来（已按组展开）。
 #
-# 【用法】
+# 用法
 #   python scripts/run_grpo.py --config configs/grpo_config.yaml
 #   python scripts/run_grpo.py --max-steps 120      # 覆盖步数上限
 # =====================================================================
@@ -41,7 +41,7 @@ from transformers import AutoModelForImageTextToText, AutoTokenizer
 def make_math_reward(weights: dict | None = None):
     """构造数学奖励函数（v2：从"纯 0/1"升级为"正确性 + 格式 + 长度"）。
 
-    为什么加部分分：组大小有限时，若全组同分（都错/都对），优势=0 → 该步白跑。
+    为什么加部分分：组大小有限时，若全组同分（都错/都对），优势=0 → 该步不产生有效梯度。
     给"格式正确"一点分，能让同组内产生差异，梯度信号更密。
 
     权重来自 configs/*.yaml 的 reward.weights：

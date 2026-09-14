@@ -63,8 +63,8 @@ for m in similarity rule load_all random; do
 done
 
 # ---------- P3 双臂训练 ----------
-# ⚠️ 注意：这两个函数必须在"找不到目标"时也返回 0，
-# 否则 set -e 会因为命令替换失败而静默终止整个脚本（曾踩坑）。
+# 注意：这两个函数必须在"找不到目标"时也返回 0，
+# 否则 set -e 会因为命令替换失败而静默终止整个脚本（曾注意事项）。
 ckpt_step() { ls -d "$1"/checkpoint-* 2>/dev/null | sed 's#.*checkpoint-##' | sort -n | tail -1 || true; }
 # 权重文件：合并保存=model.safetensors；适配器保存=adapter_model.safetensors
 weights_of() {
@@ -138,4 +138,4 @@ if None not in (sb, sm, b, m):
           f"   （>0 说明『推理RL』让技能选择学得更好）")
     print(f"⑤ 绝对值对比：skillrl-from-mathrl {sm:.3f} vs skillrl-from-base {sb:.3f}")
 PYSUM
-echo "✅ Skill-RLVR 流程完成（双臂）"
+echo "Skill-RLVR 流程完成（双臂）"

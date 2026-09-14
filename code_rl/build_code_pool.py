@@ -2,17 +2,17 @@
 # =====================================================================
 # build_code_pool.py —— 构建代码 RL 题库（Code RLVR 实验用）
 #
-# 【和数学实验的对应关系】
+# 和数学实验的对应关系
 #   数学：GSM8K 题面+数字答案  -> verifier 比数字
 #   代码：MBPP 题面+隐藏测试   -> 沙箱跑测试
 #   两者都产出统一格式 {"prompt", "ground_truth"}，共用 run_grpo 训练回路。
 #
-# 【数据集选择】
+# 数据集选择
 #   训练题库：MBPP(sanitized, 427 题) —— 题目短、函数级、自带 assert 测试
 #   评估题库：HumanEval(164 题)       —— 业界标准代码基准，pass@1
 #   （不把测试写进 prompt，避免模型"背答案"；只给函数名和题意）
 #
-# 【用法】
+# 用法
 #   python code_rl/build_code_pool.py --which train   # MBPP -> code_rl/data/mbpp_train.jsonl
 #   python code_rl/build_code_pool.py --which eval    # HumanEval -> code_rl/data/humaneval.jsonl
 # =====================================================================

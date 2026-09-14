@@ -2,15 +2,15 @@
 # =====================================================================
 # build_sft_from_gsm8k.py —— 从 GSM8K 官方 CoT 构建冷启动 SFT 数据
 #
-# 【为什么】（详见 PROJECT_LOG Phase3 pivot）
+# 动机
 #   自生成冷启动在 AIME 级难题上成功率太低(~12%)；GSM8K train 的 answer
 #   字段自带人写逐步推理 + "#### 数字"，是现成的高质量 CoT SFT 语料。
 #
-# 【产物】data/processed/sft_coldstart.jsonl
+# 产物data/processed/sft_coldstart.jsonl
 #   每行: {"question","ground_truth","solution","messages":[...]}
 #   messages 与 run_sft.py / GRPO / 评估的 chat 格式一致。
 #
-# 【用法】 python scripts/build_sft_from_gsm8k.py --n 1200 --seed 0
+# 用法 python scripts/build_sft_from_gsm8k.py --n 1200 --seed 0
 # =====================================================================
 
 from __future__ import annotations

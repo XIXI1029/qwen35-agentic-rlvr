@@ -5,7 +5,7 @@
 # 结果写入 outputs/results/humaneval_<tag>_<ts>.json，schema 与数学实验一致，
 # 因此可以直接被 scripts/compare_models.py 汇总。
 #
-# 【用法】
+# 用法
 #   python code_rl/evaluate_code.py --model Qwen/Qwen3.5-4B-Base --tag Base
 #   python code_rl/evaluate_code.py --model outputs/qwen3.5-4b-grpo-code --tag grpo
 # =====================================================================
