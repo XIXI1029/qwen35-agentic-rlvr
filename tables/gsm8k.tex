@@ -1,0 +1,19 @@
+% 由 tables/make_tables.py 自动生成（数字来自 evidence/results/*.json）
+% 需要 \usepackage{booktabs}
+
+\begin{table}[t]
+  \centering
+  \caption{Reasoning layer: GSM8K. GRPO v2 fixes the zero-variance-group failure mode of v1 (group size 4$\rightarrow$8 + partial-credit reward) and surpasses the 9B baseline.}
+  \label{tab:gsm8k}
+  \begin{tabular}{lcc}
+    \toprule
+    Model & Accuracy & Correct \\
+    \midrule
+    4B-Base (no RL) & 30.0\% & 15/50 \\
+    4B-SFT (cold start) & 34.0\% & 17/50 \\
+    4B-GRPO v1 (G=4, binary reward) & 34.0\% & 17/50 \\
+    4B-GRPO v2 (G=8, partial credit) & 50.0\% & 25/50 \\
+    9B-Base (reference) & 40.0\% & 20/50 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

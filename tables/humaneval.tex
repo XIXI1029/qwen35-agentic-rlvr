@@ -1,0 +1,18 @@
+% 由 tables/make_tables.py 自动生成（数字来自 evidence/results/*.json）
+% 需要 \usepackage{booktabs}
+
+\begin{table}[t]
+  \centering
+  \caption{Execution layer: HumanEval pass@1 with sandboxed unit-test reward. Math cold-start SFT transfers to code (+7.3 pt over Base).}
+  \label{tab:humaneval}
+  \begin{tabular}{lcc}
+    \toprule
+    Model & pass@1 & Passed \\
+    \midrule
+    4B-Base & 14.6\% & 24/164 \\
+    4B-SFT (math cold start) & 21.9\% & 36/164 \\
+    4B-Code-GRPO v1 & 21.9\% & 36/164 \\
+    4B-Code-GRPO v2 & 25.0\% & 41/164 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

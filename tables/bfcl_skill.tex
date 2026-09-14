@@ -1,0 +1,22 @@
+% 由 tables/make_tables.py 自动生成（数字来自 evidence/results/*.json）
+% 需要 \usepackage{booktabs}
+
+\begin{table}[t]
+  \centering
+  \caption{Selection layer: BFCL v3 (stratified 400; 80 per category). Similarity retrieval never refuses (false-load = 1.000); RL cuts it to 0.225 while improving exact match.}
+  \label{tab:bfcl}
+  \begin{tabular}{lccccc}
+    \toprule
+    Strategy / model & Exact & F1 & False-load$\downarrow$ & Miss$\downarrow$ & Avg. loads \\
+    \midrule
+    Load all candidates & \textbf{0.200} & 0.492 & 1.000 & 0.000 & 1.84 \\
+    Random pick & \textbf{0.330} & 0.412 & 1.000 & 0.000 & 1.00 \\
+    Similarity retrieval (common practice) & \textbf{0.485} & 0.606 & 1.000 & 0.000 & 1.00 \\
+    Retrieval + threshold rule & \textbf{0.590} & 0.658 & 0.650 & 0.154 & 0.77 \\
+    4B-Base (no RL) & \textbf{0.207} & 0.301 & 0.894 & 0.100 & 2.17 \\
+    Math-RL only (no skill RL) & \textbf{0.160} & 0.311 & 0.881 & 0.142 & 1.97 \\
+    Skill-RL from Base & \textbf{0.360} & \textbf{0.341} \\
+    Skill-RL from math-RL checkpoint & \textbf{0.795} & \textbf{0.652} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
