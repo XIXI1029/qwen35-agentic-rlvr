@@ -8,7 +8,17 @@
 
 </div>
 
-![Method overview](figures/method_overview.png)
+**Figure 1 · one shared pipeline.** Data pools → cold-start SFT → GRPO (G = 8 on-policy samples) → verifiable reward → group-relative advantage → LoRA update.
+
+![Pipeline](figures/fig_a_pipeline.png)
+
+**Figure 2 · three capability layers.** Same recipe, three verifiers; inline bars show before/after RL with the reference baseline (9B, SFT, threshold-rule) as a dashed line.
+
+![Three capability layers](figures/fig_b_layers.png)
+
+**Figure 3 · cross-task transfer and the failure mode we fixed.** (left) starting skill-RL from a math-RL checkpoint transfers far better than from Base; (middle) zero-variance GRPO steps drop from 0.50 to 0.00 after group size 4→8 + partial credit; (right) false-load rate on refusal cases.
+
+![Transfer and diagnosis](figures/fig_c_transfer.png)
 
 ---
 
@@ -38,7 +48,7 @@ scripts/    shared GRPO+RLVR pipeline (prepare_data, run_sft, run_grpo, evaluate
 code_rl/    code layer + T1 sandbox + HumanEval/MBPP pools
 memoryRL/   skill-selection layer (self-built skill library, BFCL eval, two-arm transfer study)
 configs/    hyperparameters: 12 GB / server / v2 (group size 8 + partial credit)
-figures/    method overview (regenerable: figures/method_overview.py → png + pdf)
+figures/    three standalone figures (regenerable: figures/make_figures.py → png + pdf)
 evidence/   curated raw evidence: result JSONs (evidence/results/) and training logs (evidence/logs/)
 ```
 
