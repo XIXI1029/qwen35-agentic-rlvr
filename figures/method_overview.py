@@ -166,8 +166,8 @@ def main() -> None:
     ax.add_patch(FancyArrowPatch((0.916, y - 0.022), (0.412, y - 0.022),
                                  arrowstyle="-|>", mutation_scale=10, lw=1.3,
                                  color=AFTER, ls=(0, (4, 2.5)),
-                                 connectionstyle="arc3,rad=0.12", zorder=3))
-    ax.text(0.664, y - 0.010, "on-policy rollout loop  (resumable · checkpointed)",
+                                 connectionstyle="arc3,rad=0.0", zorder=3))
+    ax.text(0.664, y - 0.046, "on-policy rollout loop  (resumable · checkpointed)",
             fontsize=7.2, color=AFTER, ha="center")
 
 
