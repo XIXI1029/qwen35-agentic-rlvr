@@ -1,0 +1,9 @@
+{
+  "model": "Qwen/Qwen3.5-9B-Base",
+  "task": "gsm8k",
+  "n": 50,
+  "correct": 20,
+  "accuracy": 0.4,
+  "seconds": 849.4,
+  "generated_at": "2026-09-11T08:35:26"
+}

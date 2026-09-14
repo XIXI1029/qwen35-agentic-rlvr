@@ -1,0 +1,9 @@
+{
+  "model": "Qwen/Qwen3.5-9B-Base",
+  "task": "aime2024",
+  "n": 60,
+  "correct": 0,
+  "accuracy": 0.0,
+  "seconds": 1083.1,
+  "generated_at": "2026-09-11T08:54:40"
+}

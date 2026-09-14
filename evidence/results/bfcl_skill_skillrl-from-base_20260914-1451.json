@@ -1,0 +1,79 @@
+{
+  "tag": "skillrl-from-base",
+  "strategy": "outputs/qwen3.5-4b-grpo-skill-base",
+  "overall": {
+    "n": 400,
+    "exact_acc": 0.36,
+    "micro_precision": 0.2284,
+    "micro_recall": 0.6708,
+    "micro_f1": 0.3407,
+    "false_load_rate": 0.6562,
+    "miss_rate": 0.1208,
+    "avg_pred_size": 1.76,
+    "avg_gt_size": 0.6,
+    "avg_prompt_chars": 1192.3
+  },
+  "per_category": {
+    "irrelevance": {
+      "n": 80,
+      "exact_acc": 0.3875,
+      "micro_precision": 0.0,
+      "micro_recall": 1.0,
+      "micro_f1": 0.0,
+      "false_load_rate": 0.6125,
+      "miss_rate": 0.0,
+      "avg_pred_size": 1.1,
+      "avg_gt_size": 0.0,
+      "avg_prompt_chars": 579.1
+    },
+    "live_irrelevance": {
+      "n": 80,
+      "exact_acc": 0.3,
+      "micro_precision": 0.0,
+      "micro_recall": 1.0,
+      "micro_f1": 0.0,
+      "false_load_rate": 0.7,
+      "miss_rate": 0.0,
+      "avg_pred_size": 1.55,
+      "avg_gt_size": 0.0,
+      "avg_prompt_chars": 1019.6
+    },
+    "live_multiple": {
+      "n": 80,
+      "exact_acc": 0.2125,
+      "micro_precision": 0.2537,
+      "micro_recall": 0.6375,
+      "micro_f1": 0.363,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.175,
+      "avg_pred_size": 2.51,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 2661.2
+    },
+    "multiple": {
+      "n": 80,
+      "exact_acc": 0.2,
+      "micro_precision": 0.2755,
+      "micro_recall": 0.675,
+      "micro_f1": 0.3913,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.0875,
+      "avg_pred_size": 2.45,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 1105.5
+    },
+    "simple": {
+      "n": 80,
+      "exact_acc": 0.7,
+      "micro_precision": 0.5833,
+      "micro_recall": 0.7,
+      "micro_f1": 0.6364,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.1,
+      "avg_pred_size": 1.2,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 596.2
+    }
+  },
+  "seconds": 3806.5
+}

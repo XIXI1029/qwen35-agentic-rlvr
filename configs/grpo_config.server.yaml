@@ -1,0 +1,77 @@
+# =====================================================================
+# grpo_config.server.yaml —— GRPO 配置【服务器大显存版】
+#
+# 与 grpo_config.yaml(本机 12GB 版) 的区别：
+#   - 放大批量并发：per_device 1->4、累积 8->2（等效 batch 仍 8，但 4 条一批
+#     并发算，比 batch1 的单条流水线吞吐更高）
+#   - 梯度检查点保持开启：实测 32GB(V100) 上"batch4+关检查点"会 OOM
+#     （GRPO 要同时存策略/参考前向 + 多条轨迹激活，比 SFT 吃显存），
+#     故保留 checkpointing 防 OOM
+#   - 缩短生成长度 256->192（GSM8K 答案短，省显存且更快）
+#   - 打开 checkpoint 保存(每 200 步)：配合 run_grpo.py 的自动续训，
+#     中断后重跑同命令即从断点继续，不丢进度
+#   - 默认 max_steps 600（可用 --max-steps 覆盖）
+#
+# 用法： GRPO_CONFIG=configs/grpo_config.server.yaml bash run_full_pipeline.sh
+# =====================================================================
+
+training:
+  output_dir: "./outputs/qwen3.5-4b-grpo"
+  # ---- 批量（服务器版）----
+  # ⚠️ 实测：batch4 + 关梯度检查点在 32GB(V100) 上会 OOM（GRPO 要同时存
+  #    策略/参考前向 + 4 条轨迹激活，比 SFT 吃显存）。所以这里保留批量并发，
+  #    但把 checkpointing 开回来，并缩短生成长度来省显存。
+  per_device_train_batch_size: 4   # 批量并发（比 batch1 的单条流水线效率高）
+  gradient_accumulation_steps: 2   # 累积 2 次 -> 等效 batch 8（与旧配置同）
+  gradient_checkpointing: true     # 开回来防 OOM（显存换算力）
+  num_generations: 4               # 每 prompt 采 4 条
+  max_completion_length: 192       # 256->192：GSM8K 答案短，省显存也更快
+  num_train_epochs: 20             # 由 max_steps 封顶
+  max_steps: 600                   # 默认 600 步（--max-steps 可覆盖）
+  # ---- 优化 ----
+  learning_rate: 1.0e-6
+  lr_scheduler_type: "constant"
+  optim: "adamw_torch"
+  beta: 0.04
+  # ---- 保存/日志（关键：开 checkpoint，可续训）----
+  save_strategy: "steps"
+  save_steps: 200
+  save_total_limit: 3
+  logging_steps: 1
+  report_to: "none"
+  bf16: true
+  use_vllm: false
+
+generation:
+  temperature: 0.9
+  top_p: 0.95
+  do_sample: true
+
+reward:
+  weights:
+    answer_correct: 1.0
+    format_correct: 0.1
+    length_penalty: -0.0001
+  sandbox:
+    timeout_seconds: 5
+    max_steps: 12
+
+model:
+  sft_model_dir: "./outputs/qwen3.5-4b-sft"
+  base_model_id: "Qwen/Qwen3.5-4B-Base"
+  load_in_4bit: false
+  torch_dtype: "bfloat16"
+
+qlora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  bias: "none"
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+  task_type: "CAUSAL_LM"
+
+data:
+  rl_jsonl: "./data/processed/grpo_train.jsonl"
+
+output:
+  save_dir: "./outputs/qwen3.5-4b-grpo"

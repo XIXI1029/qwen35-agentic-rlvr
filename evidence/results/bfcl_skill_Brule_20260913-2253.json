@@ -1,0 +1,43 @@
+{
+  "tag": "Brule",
+  "strategy": "rule",
+  "overall": {
+    "n": 400,
+    "exact_acc": 0.7575,
+    "micro_precision": 0.8608,
+    "micro_recall": 0.7575,
+    "micro_f1": 0.8059,
+    "false_load_rate": 0.0,
+    "miss_rate": 0.12,
+    "avg_pred_size": 0.88,
+    "avg_gt_size": 1.0,
+    "avg_prompt_chars": 2317.4
+  },
+  "per_category": {
+    "live_multiple": {
+      "n": 200,
+      "exact_acc": 0.59,
+      "micro_precision": 0.7421,
+      "micro_recall": 0.59,
+      "micro_f1": 0.6574,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.205,
+      "avg_pred_size": 0.8,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 3339.9
+    },
+    "multiple": {
+      "n": 200,
+      "exact_acc": 0.925,
+      "micro_precision": 0.9585,
+      "micro_recall": 0.925,
+      "micro_f1": 0.9415,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.035,
+      "avg_pred_size": 0.96,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 1295.0
+    }
+  },
+  "seconds": 0.0
+}

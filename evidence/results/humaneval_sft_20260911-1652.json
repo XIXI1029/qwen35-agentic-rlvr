@@ -1,0 +1,9 @@
+{
+  "model": "outputs/qwen3.5-4b-sft",
+  "task": "humaneval",
+  "n": 164,
+  "correct": 36,
+  "accuracy": 0.2195,
+  "seconds": 4256.5,
+  "generated_at": "2026-09-11T16:52:49"
+}

@@ -1,0 +1,9 @@
+{
+  "model": "outputs/qwen3.5-4b-grpo-v2",
+  "task": "aime2024",
+  "n": 60,
+  "correct": 0,
+  "accuracy": 0.0,
+  "seconds": 1061.7,
+  "generated_at": "2026-09-13T20:06:29"
+}

@@ -1,0 +1,67 @@
+# =====================================================================
+# data_config.yaml —— 数据集 / 路径 / 过滤参数 总表
+#
+# 供 prepare_data.py（Phase2）、evaluate.py、compare_models.py 共用，
+# 把"从哪下载、过滤成什么样、评估哪些任务"集中在一个地方。
+# =====================================================================
+
+# ---------- 数据集真实 ID（plan.md 里写错了，以这里为准）----------
+datasets:
+  # RL 轨迹数据：30.1K 条真实 agent 端到端轨迹
+  #   组成 = DAPO-Math(17K) + MegaScience 可验证科学题(3K) + LeetCode/Skywork-OR1
+  rl_dataset_id: "Gen-Verse/Open-AgentRL-30K"
+  # SFT 冷启动数据：3K 条（独立数据集，不是 30K 的子集）
+  sft_dataset_id: "Gen-Verse/Open-AgentRL-SFT-3K"
+  # 下载到本机的原始数据缓存目录（datasets 库会按 id 分目录缓存）
+  cache_dir: "./data/raw"
+  # 下载渠道：transformers/datasets 库默认连 huggingface.co（被墙）。
+  #   "hf-mirror" -> 脚本里设 HF_ENDPOINT=https://hf-mirror.com 再下载
+  #   "modelscope"-> 走 modelscope（最稳，但需要把数据集转成 modelscope 路径）
+  #   ⚠️ 这些数据集目前主要托管在 HF 上，国内首选 "hf-mirror"
+  download_source: "hf-mirror"
+
+# ---------- 本地文件路径（prepare_data.py 的产物）----------
+paths:
+  # 处理后的 SFT 训练集（文本问答/轨迹格式，喂给 run_sft.py）
+  sft_jsonl: "./data/processed/sft.jsonl"
+  # 处理后的 RL 训练集（prompt + 可选初始化轨迹，喂给 run_grpo.py）
+  rl_jsonl: "./data/processed/rl.jsonl"
+  # 下游 benchmark 评测用小样本（用于 Phase 1 基线与 Phase 5 对比）
+  eval_gsm8k: "./data/processed/eval_gsm8k.jsonl"
+  eval_aime: "./data/processed/eval_aime.jsonl"
+  eval_lcb: "./data/processed/eval_lcb.jsonl"
+  # 评估原始数据集（openai/gsm8k 等在 HF 上；同走 hf-mirror）
+  eval_dataset_cache: "./data/raw/eval"
+
+# ---------- 轨迹效率过滤参数（核心创新点，写简历用）----------
+filtering:
+  enabled: true            # 开关：想先跑"全量数据"基线时可临时关掉
+  # 效率得分 = 完成该题理论上最少的工具调用次数 / 该轨迹实际工具调用次数
+  # 得分 ∈ (0,1]，越接近 1 说明路径越直接。过滤掉那些"绕路绕了半天才答对"的轨迹
+  min_efficiency: 0.5      # 只保留效率分 >= 0.5 的【成功】轨迹
+  # 失败轨迹处理：全丢掉会让模型只见过"成功路径"，没见过"走错了要回头/放弃"。
+  # 按比例保留少量失败样本当负样本/探索信号
+  keep_failed_ratio: 0.2   # 每 5 条成功样本保留 1 条失败样本（可调）
+  # 注：Open-AgentRL 的数据未必带 reward 字段，实际"对/错"需在过滤时重新判定
+  #（运行工具看结果 / 比对最终答案）。prepare_data.py 里会做真判定，不靠元数据。
+
+# ---------- 数据规模控制（显存/时间预算不足时先小规模跑通流水线）----------
+scale:
+  # 全量训练的话设 None；想先"端到端跑通流程"设小值（如 sft=200, rl=400）
+  max_sft_samples: null
+  max_rl_samples: null
+
+# ---------- 用于评估的基准任务与样本数 ----------
+eval:
+  # 任务 id（lm-eval / 自研脚本支持的标识）
+  tasks: ["gsm8k", "aime2024", "livecodebench"]
+  # Phase1 基线快速小样本：每个任务抽多少题（预算紧张先 50）
+  n_samples_per_task: 50
+  # 参与最终对比的模型列表（键=展示名, 值=模型id或本地目录）
+  models:
+    "4B-Base": "Qwen/Qwen3.5-4B-Base"            # 基线1（不训练）
+    "4B-SFT": "./outputs/qwen3.5-4b-sft"          # 基线2
+    "4B-GRPO": "./outputs/qwen3.5-4b-grpo"        # 本项目核心产出
+    "9B-Base": "Qwen/Qwen3.5-9B-Base"            # 对齐目标（不训练）
+  # 结果输出
+  results_dir: "./outputs/results"

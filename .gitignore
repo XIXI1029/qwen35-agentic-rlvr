@@ -1,0 +1,56 @@
+# =====================================================================
+# .gitignore —— 哪些文件/目录不该提交到 git
+# （大模型权重、原始数据集、训练产物都很大，绝不能入库）
+# =====================================================================
+
+# ---- 1. 大文件目录（脚本运行时会自动重建，不需要入库）----
+# 模型权重下载/训练缓存目录（由脚本 --cache_dir / modelscope 创建）
+/models/
+# 原始 + 处理后的数据集
+/data/raw/
+/data/processed/
+# HF / ModelScope / pip 的本地缓存（全部指向项目内 .cache/，不入库）
+/.cache/
+# 一切训练产物：checkpoint、日志、评估结果
+/outputs/
+# SFT / GRPO 训练日志（tensorboard 等）
+/logs/
+# wandb 同步缓存
+/wandb/
+
+# ---- 2. Python 缓存与虚拟环境 ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.ipynb_checkpoints/
+
+# ---- 3. 机器学习大文件 ----
+# safetensors / bin 权重一般都不入库（用 modelscope / HF hub 托管）
+*.safetensors
+*.bin
+*.ckpt
+*.pt
+# 数据集缓存（datasets 库下载到 ~/.cache/huggingface 但保险起见也排除）
+*.parquet
+*.arrow
+*.jsonl
+
+# ---- 4. 敏感信息 ----
+.env
+*.pem
+
+# ---- 5. 编辑器 / 系统文件 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- 6. 服务器拷回的原始产物（体积大；已在 evidence/ 里保留精简证据）----
+/server2/
+/sever/
+# 处理后的数据集（可由 scripts/*.py 重新生成）
+/data/processed/
+# 临时文件
+*.tmp

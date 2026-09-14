@@ -1,0 +1,68 @@
+# =====================================================================
+# grpo_config.v2.yaml —— 数学 GRPO 配置 v2（针对"GRPO 净收益≈0"的改进版）
+#
+# 【相对 v1(server) 的改动及理由】（详见 EXPERIMENT_REPORT.md §5）
+#   num_generations  4 -> 8    : v1 组内零方差比例高(实测 0.5)，一半步没梯度；
+#                                组变大 -> 同组更容易出现"有对有错"，优势非零
+#   max_steps        600 -> 2000: v1 明显欠训练
+#   learning_rate  1e-6 -> 2e-6: 稍微提高更新幅度
+#   beta           0.04 -> 0.02: 放松 KL 约束，允许策略离开 SFT 更远
+#   reward 权重启用              : 正确性 + 格式分 + 长度惩罚（部分分）
+#   max_completion_length 200    : 配合组变大控制显存
+#
+# 产物目录独立：outputs/qwen3.5-4b-grpo-v2（不覆盖 v1 结果）
+# 用法： GRPO_CONFIG=configs/grpo_config.v2.yaml bash run_full_pipeline.sh
+# =====================================================================
+
+training:
+  output_dir: "./outputs/qwen3.5-4b-grpo-v2"
+  # 组大小 8 -> 每个 prompt 展开 8 条轨迹；配合 batch2×acc4（等效 8 prompt/更新）
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 4
+  gradient_checkpointing: true
+  num_generations: 8
+  max_completion_length: 200
+  num_train_epochs: 50            # 由 max_steps 封顶
+  max_steps: 2000
+  learning_rate: 2.0e-6
+  lr_scheduler_type: "constant"
+  optim: "adamw_torch"
+  beta: 0.02
+  save_strategy: "steps"          # 存 checkpoint（可续训）
+  save_steps: 200
+  save_total_limit: 3
+  logging_steps: 1
+  report_to: "none"
+  bf16: true
+  use_vllm: false
+
+generation:
+  temperature: 0.9
+  top_p: 0.95
+  do_sample: true
+
+# ⭐ v2 起这些权重真正生效（run_grpo.make_math_reward 读取）
+reward:
+  weights:
+    answer_correct: 1.0      # 主信号：答案对
+    format_correct: 0.1      # 辅助：结尾给了数字/答案（制造组内差异）
+    length_penalty: -0.0001  # 负系数：鼓励简洁
+
+model:
+  sft_model_dir: "./outputs/qwen3.5-4b-sft"
+  base_model_id: "Qwen/Qwen3.5-4B-Base"
+  torch_dtype: "bfloat16"
+
+qlora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  bias: "none"
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+  task_type: "CAUSAL_LM"
+
+data:
+  rl_jsonl: "./data/processed/grpo_train.jsonl"
+
+output:
+  save_dir: "./outputs/qwen3.5-4b-grpo-v2"

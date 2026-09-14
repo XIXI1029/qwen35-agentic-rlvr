@@ -1,0 +1,57 @@
+# =====================================================================
+# requirements.txt —— 项目依赖清单（分块注释，方便理解每一行干嘛的）
+#
+# 【快速安装命令】（国内网络，务必走清华镜像，实测 pypi.org 直连不稳定）
+#   pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+#
+# 【版本策略】
+#   - torch 不锁小版本：Windows 上 PyPI/镜像默认就是 CUDA 版 wheel，
+#     装完用下面命令验证是否真能用 GPU：
+#       python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+#   - 若输出 cuda=False，说明装成了 CPU 版，改成从 PyTorch 官方源装：
+#       pip install torch --index-url https://download.pytorch.org/whl/cu128
+# =====================================================================
+
+
+# =====================================================================
+# 【第 1 块】核心训练框架
+# =====================================================================
+torch                 # 深度学习后端。RTX 4070(12GB) 建议配合 bf16/4bit 使用
+transformers          # HuggingFace 模型加载/训练 API（TRL 的底层依赖）
+accelerate            # 分布式 / 混合精度训练后端（TRL 依赖）
+trl>=0.12.0           # 核心强化学习库：提供 SFTTrainer 和 GRPOTrainer（本项目主角）
+peft                  # LoRA/QLoRA 参数高效微调（4bit 下只训练 ~1-2% 参数）
+bitsandbytes          # 4-bit/8-bit 量化加载（让 4B/9B 模型挤进 12GB 显存）
+
+
+# =====================================================================
+# 【第 2 块】数据
+# =====================================================================
+datasets              # HuggingFace datasets：读 Open-AgentRL-30K 数据集
+pyarrow               # datasets 底层依赖，读写 parquet/arrow
+numpy                 # 数值计算
+pandas                # 表格处理 / 评估结果 DataFrame
+scikit-learn         # 偶尔用 F1 / 精度计算（奖励函数里会用到）
+
+
+# =====================================================================
+# 【第 3 块】工具
+# =====================================================================
+pyyaml                # 读取 configs/*.yaml 配置
+huggingface_hub       # HF hub 客户端（下载 tokenizer 配置等）
+safetensors           # 安全的模型权重格式（默认保存格式）
+tqdm                  # 进度条
+matplotlib            # 训练曲线 / 结果可视化
+sentencepiece         # Qwen 系 tokenizer 需要的分词底层库（保险起见装上）
+protobuf              # 同上，Qwen tokenizer 依赖
+
+
+# =====================================================================
+# 【第 4 块】可选 / 后续阶段再加（按需取消注释安装）
+# =====================================================================
+# wandb                # 训练监控（需要账号，可选；不用就把 report_to 设为 "none"）
+# modelscope           # 国内下载模型首选（Qwen 官方在 modelscope 有镜像）
+# openai               # Phase 6 部署后测试 OpenAI 兼容 API 用
+# lm-eval              # Phase 5 benchmark 统一评估（安装较重，届时再装）
+# vllm                 # Phase 6 部署。⚠️ 注意：vLLM 官方【不支持 Windows 原生】，
+#                      # 需在 WSL2 / Docker 里跑；Windows 上可用 transformers 方案替代

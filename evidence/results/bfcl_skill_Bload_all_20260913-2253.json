@@ -1,0 +1,43 @@
+{
+  "tag": "Bload_all",
+  "strategy": "load_all",
+  "overall": {
+    "n": 400,
+    "exact_acc": 0.0,
+    "micro_precision": 0.2738,
+    "micro_recall": 1.0,
+    "micro_f1": 0.4299,
+    "false_load_rate": 0.0,
+    "miss_rate": 0.0,
+    "avg_pred_size": 3.65,
+    "avg_gt_size": 1.0,
+    "avg_prompt_chars": 2317.4
+  },
+  "per_category": {
+    "live_multiple": {
+      "n": 200,
+      "exact_acc": 0.0,
+      "micro_precision": 0.2212,
+      "micro_recall": 1.0,
+      "micro_f1": 0.3623,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.0,
+      "avg_pred_size": 4.52,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 3339.9
+    },
+    "multiple": {
+      "n": 200,
+      "exact_acc": 0.0,
+      "micro_precision": 0.3591,
+      "micro_recall": 1.0,
+      "micro_f1": 0.5284,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.0,
+      "avg_pred_size": 2.79,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 1295.0
+    }
+  },
+  "seconds": 0.0
+}

@@ -1,0 +1,78 @@
+# =====================================================================
+# sft_config.yaml —— Phase 3「冷启动 SFT」的全部配置
+#
+# 【设计说明】
+#   run_sft.py 会把这个 YAML 原样加载成 dict：
+#     - training 段  -> 传给 transformers.TrainingArguments（注意 TRL 新版本
+#       用 SFTConfig，它继承自 TrainingArguments 并加了 max_seq_length 等）
+#     - model 段     -> 决定加载哪个基座模型 + 4bit 量化开关
+#     - qlora 段     -> 传给 peft.LoraConfig（只在 4bit 基座上挂低秩适配器）
+#     - data 段      -> 训练数据位置
+#
+# 【为什么 SFT 是必需的冷启动】
+#   GRPO 是"在线"RL：模型自己采样轨迹再学。如果一开始模型连"正确的解题+工具
+#   调用格式"都不会，采样出来全是垃圾，奖励恒为 0，RL 学不动。
+#   所以先用 3K 条专家轨迹做 SFT，让模型学会"行为格式"，RL 才有正反馈可学。
+# =====================================================================
+
+# ---------- 训练超参数（字段名 = TrainingArguments / SFTConfig 同名参数）----------
+training:
+  output_dir: "./outputs/qwen3.5-4b-sft"   # checkpoint / 日志保存目录
+  # 显存/速度权衡（实测标定后结论，写入 configs 供复用）：
+  #   batch4无检查点 -> OOM；batch1+梯度检查点 -> 最快稳定（~1.3s@220tok）。
+  #   总耗时 ≈ 样本数×epoch×单样本耗时，靠减数据量控制时长。
+  per_device_train_batch_size: 1          # 每张卡一次前向的样本数
+  gradient_accumulation_steps: 8          # 累积 8 步再更新（等效 batch 8）
+  gradient_checkpointing: true            # ⭐ 实测唯一稳定选项，牺牲一点算力换不 OOM
+  num_train_epochs: 1                     # 300 条小数据 1 epoch（38 步），冷启动只需"教格式"
+  learning_rate: 2.0e-5                   # SFT 学习率比预训练高（LoRA 常用 1e-5~2e-5）
+  lr_scheduler_type: "cosine"             # 余弦退火，收尾更稳（可选 constant）
+  warmup_steps: 20                        # 前 20 步线性热身（⚠️ trl 1.12 用 warmup_steps 不是 ratio）
+  weight_decay: 0.01                      # 权重衰减，轻微正则
+  # ---- 保存 / 日志节奏 ----
+  save_strategy: "no"                     # SFT 短训，不存中间 checkpoint，只存最终
+  logging_steps: 10                       # 每 10 步打一条日志
+  report_to: "none"                       # 不接 wandb/tensorboard（想监控可改 "wandb"）
+  # ---- 精度：4070 是 Ada 架构支持 bf16，显存减半且训练更稳 ----
+  bf16: true
+  # ---- SFTConfig 特有（⚠️ trl 1.12 的参数名，旧教程 max_seq_length 已改名）----
+  max_length: 320                         # 截断长度（太长样本是 SFT 耗时长尾；lm_head 词表大，
+                                          # 序列越长越贵，尽量截断控预算）
+  packing: false                          # 不做样本打包（保留独立样本，loss 更清晰）
+
+# ---------- 基座模型（Phase 1 决策后按需改 model_id）----------
+model:
+  # 注意：Qwen3.5 是多模态 ForConditionalGeneration，若 GRPOTrainer 不适配，
+  # 训练主力可换标准 CausalLM（见 README §6），届时改这里即可
+  model_id: "Qwen/Qwen3.5-4B-Base"       # 训练基座（用 Base 而非 Instruct：RL 要"白纸"重训）
+  cache_dir: "./models"                   # ModelScope/transformers 下载缓存位置
+  trust_remote_code: false                # Qwen3.5 已被 transformers 原生支持，无需 remote code
+  # ---- 4-bit 量化（12GB 显存的关键）----
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"              # NF4 量化格式，比 FP4 精度略好
+  bnb_4bit_compute_dtype: "bfloat16"      # 反量化后的计算精度（fp32 太耗显存）
+  bnb_4bit_use_double_quant: true         # 对量化常数再量化一次，再省 ~0.4 位/参数
+  torch_dtype: "bfloat16"                 # 权重本身的目标 dtype
+
+# ---------- QLoRA 配置（peft.LoraConfig）----------
+qlora:
+  r: 16              # 低秩矩阵的秩。r 越大可学容量越大但显存/过拟合风险也涨
+  lora_alpha: 32     # 缩放系数。LoRA 输出 = alpha/r × (B·A)。alpha/r=2 是常见配比
+  lora_dropout: 0.05 # 适配器上的 dropout，防过拟合
+  bias: "none"       # 不训练 bias 项
+  # 目标模块：Qwen 系的 q/k/v/o 投影矩阵。挂注意力上的 Wq 通常效果最好。
+  # ⚠️ 若训练主力换成 Qwen3（标准 CausalLM），这组名字同样适用。
+  # ⚠️ 若用 Qwen3.5（混合注意力），可能还需加线性注意力模块的投影名，Phase1 冒烟时确认
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+  task_type: "CAUSAL_LM"                  # 因果语言模型任务
+
+# ---------- 数据 ----------
+data:
+  # SFT 用专家轨迹教格式，用 Gen-Verse/Open-AgentRL-SFT-3K（3K 条）
+  dataset_id: "Gen-Verse/Open-AgentRL-SFT-3K"
+  processed_dir: "./data/processed"
+  sft_jsonl: "./data/processed/sft.jsonl"  # prepare_data.py 输出的 SFT 训练集
+
+# ---------- 输出 ----------
+output:
+  save_dir: "./outputs/qwen3.5-4b-sft"    # 最终保存 SFT 模型目录

@@ -1,0 +1,71 @@
+# =====================================================================
+# code_config.v2.yaml —— 代码 GRPO 配置 v2（改进版）
+#
+# 【相对 v1 的改动】（同上：v1 的 code RL 也净收益 0）
+#   num_generations 4 -> 8    : 降低组内零方差比例
+#   max_steps      300 -> 800 : 代码任务更难，需要更多步
+#   lr             1e-6 -> 2e-6 ；beta 0.04 -> 0.02
+#   ⭐ 奖励分档（部分分）：
+#        tests_passed 1.0  全部测试通过
+#        wrong_answer 0.3  能跑但断言失败（学会"代码可运行"）
+#        error        0.1  语法/名称错误（学会"能编译"）
+#        format_correct 0.1 给出代码块
+#        length_penalty -0.0001
+#   产物目录独立：outputs/qwen3.5-4b-grpo-code-v2
+#
+# 用法： CODE_CONFIG=code_rl/code_config.v2.yaml bash code_rl/run_code_pipeline.sh
+# =====================================================================
+
+training:
+  output_dir: "./outputs/qwen3.5-4b-grpo-code-v2"
+  # ⚠️ TRL 约束：per_device_train_batch_size × gradient_accumulation_steps
+  #    （即 generation_batch_size）必须能被 num_generations 整除。
+  #    这里 1×8=8，正好等于 num_generations=8（之前 1×4=4 会直接报错）。
+  per_device_train_batch_size: 1   # 代码更长，组变大后显存吃紧，batch 用 1
+  gradient_accumulation_steps: 8
+  gradient_checkpointing: true
+  num_generations: 8
+  max_completion_length: 320
+  num_train_epochs: 50             # 由 max_steps 封顶
+  max_steps: 800
+  learning_rate: 2.0e-6
+  lr_scheduler_type: "constant"
+  optim: "adamw_torch"
+  beta: 0.02
+  save_strategy: "steps"
+  save_steps: 100
+  save_total_limit: 3
+  logging_steps: 1
+  report_to: "none"
+  bf16: true
+  use_vllm: false
+
+generation:
+  temperature: 0.9
+  top_p: 0.95
+  do_sample: true
+
+# ⭐ 部分分权重（code_verifier.make_code_reward 读取）
+reward:
+  weights:
+    tests_passed: 1.0
+    wrong_answer: 0.3
+    error: 0.1
+    format_correct: 0.1
+    length_penalty: -0.0001
+
+sandbox:
+  timeout: 3.0
+  mem_mb: 1024
+  max_workers: 12      # 组变大后每步要跑更多段代码，多开线程并行
+
+model:
+  sft_model_dir: "./outputs/qwen3.5-4b-sft"
+  base_model_id: "Qwen/Qwen3.5-4B-Base"
+  torch_dtype: "bfloat16"
+
+data:
+  rl_jsonl: "./code_rl/data/mbpp_train.jsonl"
+
+output:
+  save_dir: "./outputs/qwen3.5-4b-grpo-code-v2"

@@ -1,0 +1,54 @@
+# =====================================================================
+# skill_config.yaml —— Skill-RLVR（技能选择）训练配置
+# 复用主项目的 GRPO 训练零件，只换题库与奖励函数。
+# =====================================================================
+
+training:
+  output_dir: "./outputs/qwen3.5-4b-grpo-skill"
+  # ⚠️ TRL 约束：batch × 累积 必须能被 num_generations 整除（2×4=8 ✓）
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 4
+  gradient_checkpointing: true
+  num_generations: 8          # 组大小 8（v2 经验：消除"无梯度步"）
+  max_completion_length: 128  # 输出只是一小段 JSON，短
+  num_train_epochs: 50        # 由 max_steps 封顶
+  max_steps: 800
+  learning_rate: 2.0e-6
+  lr_scheduler_type: "constant"
+  optim: "adamw_torch"
+  beta: 0.02
+  save_strategy: "steps"      # 存 checkpoint，可续训
+  save_steps: 100
+  save_total_limit: 3
+  logging_steps: 1
+  report_to: "none"
+  bf16: true
+  use_vllm: false
+
+generation:
+  temperature: 0.9
+  top_p: 0.95
+  do_sample: true
+
+# 奖励权重（memoryRL/skill_verifier.py 读取）
+reward:
+  weights:
+    exact: 1.0        # 集合完全一致（含"正确拒绝"）
+    partial: 0.5      # Jaccard 部分分
+    format: 0.05      # 能解析出 JSON
+    over_load: 0.1    # 每多加载一个技能扣 0.1（鼓励"少而准"）
+
+model:
+  # 起点：优先用已有 RL 后的模型（测"推理 RL 是否正向迁移到选择能力"）
+  # 若不存在则回退 Base
+  sft_model_dir: "./outputs/qwen3.5-4b-grpo-v2"   # 也可换成 -sft 或 Base 做对比
+  base_model_id: "Qwen/Qwen3.5-4B-Base"
+  torch_dtype: "bfloat16"
+
+data:
+  train_jsonl: "./data/processed/skill_train.jsonl"
+  eval_jsonl: "./data/processed/skill_bfcl_eval.jsonl"
+  heldout_jsonl: "./data/processed/skill_heldout.jsonl"
+
+output:
+  save_dir: "./outputs/qwen3.5-4b-grpo-skill"

@@ -1,0 +1,9 @@
+{
+  "model": "outputs/qwen3.5-4b-grpo",
+  "task": "gsm8k",
+  "n": 50,
+  "correct": 17,
+  "accuracy": 0.34,
+  "seconds": 814.9,
+  "generated_at": "2026-09-11T08:02:34"
+}

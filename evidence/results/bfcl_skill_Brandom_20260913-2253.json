@@ -1,0 +1,43 @@
+{
+  "tag": "Brandom",
+  "strategy": "random",
+  "overall": {
+    "n": 400,
+    "exact_acc": 0.365,
+    "micro_precision": 0.365,
+    "micro_recall": 0.365,
+    "micro_f1": 0.365,
+    "false_load_rate": 0.0,
+    "miss_rate": 0.0,
+    "avg_pred_size": 1.0,
+    "avg_gt_size": 1.0,
+    "avg_prompt_chars": 2317.4
+  },
+  "per_category": {
+    "live_multiple": {
+      "n": 200,
+      "exact_acc": 0.31,
+      "micro_precision": 0.31,
+      "micro_recall": 0.31,
+      "micro_f1": 0.31,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.0,
+      "avg_pred_size": 1.0,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 3339.9
+    },
+    "multiple": {
+      "n": 200,
+      "exact_acc": 0.42,
+      "micro_precision": 0.42,
+      "micro_recall": 0.42,
+      "micro_f1": 0.42,
+      "false_load_rate": 0.0,
+      "miss_rate": 0.0,
+      "avg_pred_size": 1.0,
+      "avg_gt_size": 1.0,
+      "avg_prompt_chars": 1295.0
+    }
+  },
+  "seconds": 0.0
+}

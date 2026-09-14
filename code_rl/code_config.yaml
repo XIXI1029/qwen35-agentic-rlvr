@@ -1,0 +1,49 @@
+# =====================================================================
+# code_config.yaml —— Code RLVR 实验配置（对应数学实验的 grpo_config.yaml）
+#
+# 默认值偏保守（4B bf16 + 代码生成较长），服务器大显存可自行放大 batch。
+# =====================================================================
+
+training:
+  output_dir: "./outputs/qwen3.5-4b-grpo-code"
+  per_device_train_batch_size: 2   # 代码生成更长更吃显存，保守用 2
+  gradient_accumulation_steps: 4   # 等效 batch 8
+  gradient_checkpointing: true     # 防 OOM
+  num_generations: 4               # 每题采 4 条
+  max_completion_length: 320       # 代码比数学长，给 320
+  num_train_epochs: 20             # 由 max_steps 封顶
+  max_steps: 300                   # 默认 300 步（--max-steps 覆盖）
+  learning_rate: 1.0e-6
+  lr_scheduler_type: "constant"
+  optim: "adamw_torch"
+  beta: 0.04
+  save_strategy: "steps"           # 存 checkpoint（可续训）
+  save_steps: 100
+  save_total_limit: 3
+  logging_steps: 1
+  report_to: "none"
+  bf16: true
+  use_vllm: false
+
+generation:
+  temperature: 0.9
+  top_p: 0.95
+  do_sample: true
+
+# 沙箱执行参数（code_sandbox 的护栏配置）
+sandbox:
+  timeout: 3.0      # 单段代码超时（秒）
+  mem_mb: 1024      # 内存上限
+  max_workers: 8    # 并行执行线程数（按 CPU 核数调）
+
+model:
+  # 直接复用数学实验的 SFT 起点（同一模型，两条 RL 实验）
+  sft_model_dir: "./outputs/qwen3.5-4b-sft"
+  base_model_id: "Qwen/Qwen3.5-4B-Base"
+  torch_dtype: "bfloat16"
+
+data:
+  rl_jsonl: "./code_rl/data/mbpp_train.jsonl"
+
+output:
+  save_dir: "./outputs/qwen3.5-4b-grpo-code"

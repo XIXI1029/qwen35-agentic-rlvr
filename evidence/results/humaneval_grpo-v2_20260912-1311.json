@@ -1,0 +1,9 @@
+{
+  "model": "outputs/qwen3.5-4b-grpo-code-v2",
+  "task": "humaneval",
+  "n": 164,
+  "correct": 41,
+  "accuracy": 0.25,
+  "seconds": 4095.4,
+  "generated_at": "2026-09-12T13:11:30"
+}
