@@ -78,11 +78,7 @@ Data pools → optional cold-start SFT → **GRPO** with `G = 8` on-policy sampl
 |----------|------------|
 | [`FINAL_REPORT.md`](FINAL_REPORT.md) | Consolidated report: background, method, all results, conclusions, limitations, reproduction commands |
 | [`EXPERIMENT_REPORT.md`](EXPERIMENT_REPORT.md) | Detailed experiment log incl. the v1→v2 analysis and the skill-selection study |
-| [`RESUME.md`](RESUME.md) | Resume-ready summary and interview Q&A (author's own notes) |
-| [`PROJECT_LOG.md`](PROJECT_LOG.md) | Chronological engineering log (bugs hit and how they were fixed) |
-| [`plan1.md`](plan1.md) | Design plan for the skill-selection layer |
 | [`tables/ALL_TABLES.md`](tables/ALL_TABLES.md) | All result tables (Markdown) |
-| [`docs/WORKING_NOTES.md`](docs/WORKING_NOTES.md) | Internal working notes (Chinese) |
 
 ## Honest limitations
 
@@ -90,6 +86,8 @@ Data pools → optional cold-start SFT → **GRPO** with `G = 8` on-policy sampl
 - AIME2024 is **not discriminative** for these models (4B/9B both score ~0) and is therefore never used as evidence.
 - The skill-selection training pool is self-built (818 items); the transfer study covers two arms only.
 - The 9B comparison is on GSM8K only.
+
+> Personal notes, day-to-day ops logs and resume drafts are deliberately kept **out of this repository**.
 
 ## Acknowledgements
 

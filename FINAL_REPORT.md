@@ -1,6 +1,6 @@
 # 项目报告（定稿）：Qwen3.5-4B 的 GRPO + RLVR 三层 Agent 能力训练
 
-> 详细实验过程见 `EXPERIMENT_REPORT.md`；简历/面试材料见 `RESUME.md`；逐日排查记录见 `PROJECT_LOG.md`。
+> 详细实验过程见 [`EXPERIMENT_REPORT.md`](EXPERIMENT_REPORT.md)；所有结果表见 [`tables/ALL_TABLES.md`](tables/ALL_TABLES.md)；原始证据见 [`evidence/`](evidence/)。
 > 环境：V100 32GB（Tesla PG503-216, sm_70）· torch 2.6.0+cu124 · trl 1.12 · transformers 5.16 · 本地另在 RTX 4070 12GB 上验证可复现。
 
 ---
@@ -119,4 +119,4 @@ SKILL_ARMS=mathrl SKILL_MAX_STEPS=800 bash memoryRL/run_skill_pipeline.sh   # �
 | 评估结果 | `outputs/outputs_serverv2/results/`、`server2/results/bfcl_skill_*.json` |
 | 训练日志/曲线 | `logs/`、`code_rl/logs/`、`server2/skill.log`、`memoryRL/skill_training_curve.png` |
 | 代码 | `scripts/`（主流水线）、`code_rl/`（代码 RL + 沙箱）、`memoryRL/`（技能选择）|
-| 文档 | `FINAL_REPORT.md`（本文）、`EXPERIMENT_REPORT.md`、`RESUME.md`、`PROJECT_LOG.md`、`plan1.md`（选择层方案）|
+| 文档 | `FINAL_REPORT.md`（本文）、`EXPERIMENT_REPORT.md`、`tables/ALL_TABLES.md`、各层 README（`code_rl/`、`memoryRL/`）|

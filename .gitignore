@@ -54,3 +54,8 @@ Thumbs.db
 /data/processed/
 # 临时文件
 *.tmp
+
+# ---- 7. 个人/运维文档（不适合公开，仅本地保留）----
+/RESUME.md
+/PROJECT_LOG.md
+/docs/
